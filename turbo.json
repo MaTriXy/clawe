@@ -1,0 +1,37 @@
+{
+  "$schema": "https://v2-7-6.turborepo.dev/schema.json",
+  "ui": "tui",
+  "globalEnv": ["ENVIRONMENT"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^lint:fix"],
+      "cache": false
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "debug": {
+      "cache": false,
+      "persistent": true
+    },
+    "openapi:export": {
+      "outputs": ["openapi.json"]
+    },
+    "generate": {
+      "dependsOn": ["api#openapi:export"],
+      "outputs": ["src/generated/**"]
+    }
+  }
+}

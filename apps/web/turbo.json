@@ -1,0 +1,23 @@
+{
+  "$schema": "https://v2-7-6.turborepo.dev/schema.json",
+  "extends": ["//"],
+  "tasks": {
+    "build": {
+      "env": [
+        "ENVIRONMENT",
+        "NODE_ENV",
+        "INTERNAL_API_URL",
+        "NEXT_PUBLIC_API_URL"
+      ],
+      "outputs": [".next/**", "!.next/cache/**"]
+    },
+    "dev": {
+      "env": [
+        "ENVIRONMENT",
+        "NODE_ENV",
+        "INTERNAL_API_URL",
+        "NEXT_PUBLIC_API_URL"
+      ]
+    }
+  }
+}

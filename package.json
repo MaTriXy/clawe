@@ -1,0 +1,32 @@
+{
+  "name": "clawe",
+  "private": true,
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "debug": "turbo run debug",
+    "dev:web": "turbo run dev --filter=web",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy",
+    "lint": "turbo run lint",
+    "lint:fix": "turbo run lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
+    "check-types": "turbo run check-types",
+    "check": "turbo run lint check-types && pnpm run format:check",
+    "fix": "turbo run lint:fix && pnpm run format"
+  },
+  "dependencies": {
+    "convex": "^1.21.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.7.4",
+    "prettier-plugin-tailwindcss": "^0.7.2",
+    "turbo": "^2.7.6",
+    "typescript": "5.9.2"
+  },
+  "packageManager": "pnpm@9.0.0",
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "debug": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint --max-warnings 0",
+    "lint:fix": "eslint --fix --max-warnings 0",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
+    "check-types": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@clawe/ui": "workspace:*",
+    "@tanstack/react-query": "^5.75.5",
+    "convex": "^1.21.0",
+    "@tiptap/core": "^3.15.3",
+    "@tiptap/extension-bubble-menu": "^3.15.3",
+    "@tiptap/extension-image": "^3.15.3",
+    "@tiptap/extension-link": "^3.15.3",
+    "@tiptap/extension-placeholder": "^3.15.3",
+    "@tiptap/extension-text-align": "^3.15.3",
+    "@tiptap/extension-underline": "^3.15.3",
+    "@tiptap/pm": "^3.15.3",
+    "@tiptap/react": "^3.15.3",
+    "@tiptap/starter-kit": "^3.15.3",
+    "@tiptap/suggestion": "^3.15.3",
+    "@xyflow/react": "^12.10.0",
+    "framer-motion": "^12.29.0",
+    "lucide-react": "^0.562.0",
+    "next": "16.1.0",
+    "next-themes": "^0.4.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tippy.js": "^6.3.7"
+  },
+  "devDependencies": {
+    "@clawe/eslint-config": "workspace:*",
+    "@clawe/typescript-config": "workspace:*",
+    "@types/node": "^22.15.3",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "eslint": "^9.39.1",
+    "typescript": "5.9.2"
+  }
+}
