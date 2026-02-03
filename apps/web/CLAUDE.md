@@ -155,3 +155,101 @@ import type { Agent, Task, Message } from "@clawe/shared";
 Light: text-yellow-600, hover bg-yellow-600/5
 Dark:  text-amber-400, hover bg-amber-400/5
 ```
+
+## Testing
+
+**Convention:** Test files live alongside implementation files.
+
+```
+src/
+├── lib/
+│   └── openclaw/
+│       ├── client.ts
+│       ├── client.spec.ts      # Unit tests for client
+│       ├── actions.ts
+│       └── actions.spec.ts     # Tests for server actions
+├── hooks/
+│   ├── use-something.ts
+│   └── use-something.spec.ts   # Hook tests
+└── app/
+    └── (dashboard)/
+        └── board/
+            └── _components/
+                ├── task-card.tsx
+                └── task-card.spec.tsx  # Component tests
+```
+
+### What to Test
+
+| Type | Test With | Example |
+|------|-----------|---------|
+| Utility functions | Vitest | `formatDate.spec.ts` |
+| React hooks | `@testing-library/react` | `use-board.spec.ts` |
+| Components | `@testing-library/react` | `task-card.spec.tsx` |
+| Server actions | Vitest + mocks | `actions.spec.ts` |
+| API routes | Vitest + fetch mocks | `route.spec.ts` |
+
+### Component Test Example
+
+```tsx
+// task-card.spec.tsx
+import { describe, it, expect } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { TaskCard } from "./task-card";
+
+describe("TaskCard", () => {
+  it("renders task title", () => {
+    render(<TaskCard title="My Task" status="pending" />);
+    expect(screen.getByText("My Task")).toBeInTheDocument();
+  });
+
+  it("shows completed state", () => {
+    render(<TaskCard title="Done" status="completed" />);
+    expect(screen.getByRole("article")).toHaveClass("opacity-50");
+  });
+});
+```
+
+### Hook Test Example
+
+```tsx
+// use-board.spec.ts
+import { describe, it, expect } from "vitest";
+import { renderHook, act } from "@testing-library/react";
+import { useBoard } from "./use-board";
+
+describe("useBoard", () => {
+  it("initializes with empty tasks", () => {
+    const { result } = renderHook(() => useBoard());
+    expect(result.current.tasks).toEqual([]);
+  });
+});
+```
+
+### Server Action Test Example
+
+```typescript
+// actions.spec.ts
+import { describe, it, expect, vi } from "vitest";
+import { saveAnthropicApiKey } from "./actions";
+
+vi.mock("./client", () => ({
+  patchConfig: vi.fn().mockResolvedValue({ ok: true, result: {} }),
+}));
+
+describe("saveAnthropicApiKey", () => {
+  it("patches config with API key", async () => {
+    const result = await saveAnthropicApiKey("sk-test");
+    expect(result.ok).toBe(true);
+  });
+});
+```
+
+### Commands
+
+```bash
+pnpm test              # Run tests
+pnpm test:watch        # Watch mode
+pnpm test:coverage     # Coverage report
+pnpm test -- path/to   # Run specific test file
+```

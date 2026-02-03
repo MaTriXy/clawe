@@ -14,7 +14,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
     "check-types": "turbo run check-types",
     "check": "turbo run lint check-types && pnpm run format:check",
-    "fix": "turbo run lint:fix && pnpm run format"
+    "fix": "turbo run lint:fix && pnpm run format",
+    "test": "turbo run test"
   },
   "dependencies": {
     "convex": "^1.21.0"

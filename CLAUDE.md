@@ -103,6 +103,51 @@ When adding components, use shadcn CLI or copy from ui.shadcn.com.
 - Check shadcn for components before adding dependencies
 - Keep bundle size small - prefer lightweight alternatives
 
+## Testing
+
+**Convention:** Every implementation file should have a corresponding test file.
+
+```
+file.ts       → file.spec.ts
+file.tsx      → file.spec.tsx
+component.tsx → component.spec.tsx
+```
+
+**When to write tests:**
+
+- New utility functions → unit tests
+- New hooks → hook tests with `@testing-library/react`
+- New API routes → integration tests
+- New Convex functions → Convex test utilities
+- Complex business logic → unit tests
+- Bug fixes → regression test first
+
+**Test structure:**
+
+```typescript
+// utils/format.spec.ts
+import { describe, it, expect } from "vitest";
+import { formatDate } from "./format";
+
+describe("formatDate", () => {
+  it("formats ISO date to readable string", () => {
+    expect(formatDate("2024-01-15")).toBe("Jan 15, 2024");
+  });
+
+  it("handles invalid input gracefully", () => {
+    expect(formatDate("invalid")).toBe("Invalid date");
+  });
+});
+```
+
+**Commands:**
+
+```bash
+pnpm test           # Run all tests
+pnpm test:watch     # Watch mode
+pnpm test:coverage  # Coverage report
+```
+
 ## Design
 
 - Accent: `yellow-600` (light), `amber-400` (dark)

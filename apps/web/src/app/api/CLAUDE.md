@@ -87,3 +87,80 @@ GITHUB_WEBHOOK_SECRET=...
 ```
 
 Access via `process.env.VARIABLE_NAME` in route handlers.
+
+## Testing
+
+**Convention:** Test files live alongside route files.
+
+```
+api/
+├── health/
+│   ├── route.ts
+│   └── route.spec.ts       # Tests for health endpoint
+├── webhooks/
+│   └── stripe/
+│       ├── route.ts
+│       └── route.spec.ts   # Tests for webhook handler
+```
+
+### Route Test Example
+
+```typescript
+// api/health/route.spec.ts
+import { describe, it, expect } from "vitest";
+import { GET } from "./route";
+
+describe("GET /api/health", () => {
+  it("returns ok status", async () => {
+    const response = await GET();
+    const data = await response.json();
+
+    expect(response.status).toBe(200);
+    expect(data.status).toBe("ok");
+  });
+});
+```
+
+### Webhook Test Example
+
+```typescript
+// api/webhooks/stripe/route.spec.ts
+import { describe, it, expect, vi } from "vitest";
+import { POST } from "./route";
+
+describe("POST /api/webhooks/stripe", () => {
+  it("rejects invalid signature", async () => {
+    const request = new Request("http://localhost/api/webhooks/stripe", {
+      method: "POST",
+      headers: { "stripe-signature": "invalid" },
+      body: JSON.stringify({ type: "test" }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(401);
+  });
+
+  it("processes valid webhook", async () => {
+    // Mock signature verification
+    vi.mock("stripe", () => ({
+      webhooks: { constructEvent: vi.fn().mockReturnValue({ type: "payment_intent.succeeded" }) },
+    }));
+
+    const request = new Request("http://localhost/api/webhooks/stripe", {
+      method: "POST",
+      headers: { "stripe-signature": "valid-sig" },
+      body: JSON.stringify({ type: "payment_intent.succeeded" }),
+    });
+
+    const response = await POST(request);
+    expect(response.status).toBe(200);
+  });
+});
+```
+
+### What to Test
+
+- **Health endpoints** - Always return expected format
+- **Webhook handlers** - Signature verification, event processing
+- **Error responses** - Proper status codes and error messages
+- **Input validation** - Reject malformed requests
