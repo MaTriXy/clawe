@@ -1,11 +1,29 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import type { ReactNode } from "react";
 
+import { useRedirectIfOnboarded } from "@/hooks/use-onboarding-guard";
 import { SetupUserMenu } from "./_components/setup-user-menu";
 
+// Wrapper that only calls the hook when Convex is available
+const OnboardingGuard = () => {
+  useRedirectIfOnboarded();
+  return null;
+};
+
 export default function SetupLayout({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
+  // /setup/convex doesn't have ConvexProvider, so skip the guard there
+  const hasConvex = pathname !== "/setup/convex";
+
   return (
     <div className="relative flex min-h-svh">
+      {/* Guard - only active when Convex is available */}
+      {hasConvex && <OnboardingGuard />}
+
       {/* User menu - top right (on illustration side) */}
       <div className="absolute top-4 right-4 z-10 hidden lg:block">
         <SetupUserMenu />

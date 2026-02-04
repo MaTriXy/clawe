@@ -36,7 +36,7 @@ Use for agents, tasks, messages - data that needs real-time sync:
 ```tsx
 "use client";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "@clawe/backend";
 
 const agents = useQuery(api.agents.list); // Real-time subscribed
 const createAgent = useMutation(api.agents.create);

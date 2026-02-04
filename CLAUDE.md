@@ -15,9 +15,10 @@ pnpm fix          # Auto-fix lint + format
 ## Structure
 
 ```
-convex/                    # Convex backend (schema, queries, mutations)
 apps/web/                  # Next.js 16 app (App Router)
   └── src/app/api/         # API routes (health, webhooks, integrations)
+packages/backend/          # Convex backend (schema, queries, mutations)
+  └── convex/              # Convex functions and schema
 packages/shared/           # Shared DTOs (Agent, Task, Message types)
 packages/ui/               # Shared components (shadcn/ui)
 packages/eslint-config/
@@ -31,7 +32,7 @@ packages/typescript-config/
 ```tsx
 "use client";
 import { useQuery, useMutation } from "convex/react";
-import { api } from "../../convex/_generated/api";
+import { api } from "@clawe/backend";
 
 const agents = useQuery(api.agents.list);
 const createAgent = useMutation(api.agents.create);
@@ -48,7 +49,7 @@ export const GET = () => {
 };
 ```
 
-Core models: `agents`, `tasks`, `messages` (see `convex/schema.ts`)
+Core models: `agents`, `tasks`, `messages` (see `packages/backend/convex/schema.ts`)
 
 ## Environment Variables
 

@@ -26,6 +26,10 @@
       "cache": false,
       "persistent": true
     },
+    "deploy": {
+      "dependsOn": ["^build"],
+      "cache": false
+    },
     "debug": {
       "cache": false,
       "persistent": true

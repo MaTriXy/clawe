@@ -7,6 +7,7 @@ import { SidebarInset, SidebarProvider } from "@clawe/ui/components/sidebar";
 import { DashboardSidebar } from "@dashboard/dashboard-sidebar";
 import { isLockedSidebarRoute } from "@dashboard/sidebar-config";
 import { SquadProvider } from "@/providers/squad-provider";
+import { useRequireOnboarding } from "@/hooks/use-onboarding-guard";
 
 type DashboardLayoutProps = {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ type DashboardLayoutProps = {
 
 const DashboardLayout = ({ children, header }: DashboardLayoutProps) => {
   const pathname = usePathname();
+  const { isLoading } = useRequireOnboarding();
   const [sidebarOpen, setSidebarOpen] = useState(
     () => !isLockedSidebarRoute(pathname),
   );
@@ -23,6 +25,14 @@ const DashboardLayout = ({ children, header }: DashboardLayoutProps) => {
   useEffect(() => {
     setSidebarOpen(!isLockedSidebarRoute(pathname));
   }, [pathname]);
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-svh items-center justify-center">
+        <div className="text-muted-foreground">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <SquadProvider>

@@ -4,10 +4,11 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:docker": "docker compose up --build openclaw",
     "debug": "turbo run debug",
     "dev:web": "turbo run dev --filter=web",
-    "convex:dev": "convex dev",
-    "convex:deploy": "convex deploy",
+    "convex:dev": "turbo run dev --filter=@clawe/backend",
+    "convex:deploy": "turbo run deploy --filter=@clawe/backend",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,md,css,json}\"",
@@ -16,9 +17,6 @@
     "check": "turbo run lint check-types && pnpm run format:check",
     "fix": "turbo run lint:fix && pnpm run format",
     "test": "turbo run test"
-  },
-  "dependencies": {
-    "convex": "^1.21.0"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

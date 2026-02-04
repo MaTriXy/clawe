@@ -1,62 +1,38 @@
 "use client";
 
 import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { useQuery } from "@tanstack/react-query";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
-import type { ConfigResponse } from "@/lib/config/types";
-
-type ConvexState = "loading" | "needs-setup" | "ready" | "error";
+import { useMemo } from "react";
+import type { ReactNode } from "react";
+import { getConfig } from "@/lib/api/config";
 
 export const ConvexClientProvider = ({ children }: { children: ReactNode }) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [state, setState] = useState<ConvexState>("loading");
-  const [client, setClient] = useState<ConvexReactClient | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ["config"],
+    queryFn: getConfig,
+    staleTime: Infinity, // Config doesn't change during session
+    retry: false,
+  });
 
-    const initializeConvex = async () => {
-      try {
-        const response = await fetch("/api/config");
-        const data = (await response.json()) as ConfigResponse;
-
-        if (!mounted) return;
-
-        if (data.configured && data.config.convexUrl) {
-          const convexClient = new ConvexReactClient(data.config.convexUrl);
-          setClient(convexClient);
-          setState("ready");
-        } else {
-          setState("needs-setup");
-        }
-      } catch (err) {
-        if (!mounted) return;
-        setError(err instanceof Error ? err.message : "Failed to load config");
-        setState("error");
-      }
-    };
-
-    initializeConvex();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // Setup pages don't need Convex context - render children directly
-  if (pathname?.startsWith("/setup")) {
-    // If Convex is ready and user is on setup, still provide context
-    // so setup/complete can use Convex to mark onboarding complete
-    if (client) {
-      return <ConvexProvider client={client}>{children}</ConvexProvider>;
+  const client = useMemo(() => {
+    if (data?.configured && data.config.convexUrl) {
+      return new ConvexReactClient(data.config.convexUrl);
     }
+    return null;
+  }, [data]);
+
+  // /setup/convex is the only page that works without Convex configured
+  // (it's where you configure the Convex URL)
+  if (pathname === "/setup/convex") {
     return <>{children}</>;
   }
 
   // Loading state
-  if (state === "loading") {
+  if (isLoading) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-muted-foreground">Loading...</div>
@@ -65,20 +41,22 @@ export const ConvexClientProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Error state
-  if (state === "error") {
+  if (isError) {
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-center">
           <p className="text-destructive">Failed to initialize</p>
-          <p className="text-muted-foreground text-sm">{error}</p>
+          <p className="text-muted-foreground text-sm">
+            {error instanceof Error ? error.message : "Unknown error"}
+          </p>
         </div>
       </div>
     );
   }
 
-  // Needs Convex setup - redirect to welcome
-  if (state === "needs-setup") {
-    router.replace("/setup/welcome");
+  // Needs Convex setup - redirect to setup
+  if (!client) {
+    router.replace("/setup/convex");
     return (
       <div className="flex min-h-svh items-center justify-center">
         <div className="text-muted-foreground">Redirecting to setup...</div>
@@ -87,5 +65,5 @@ export const ConvexClientProvider = ({ children }: { children: ReactNode }) => {
   }
 
   // Ready - provide Convex context
-  return <ConvexProvider client={client!}>{children}</ConvexProvider>;
+  return <ConvexProvider client={client}>{children}</ConvexProvider>;
 };
