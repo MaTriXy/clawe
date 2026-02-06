@@ -134,4 +134,9 @@
   [role="button"]:not([disabled]) {
     cursor: pointer;
   }
+
+  /* Fix Radix ScrollArea viewport display:table breaking text truncation */
+  [data-radix-scroll-area-viewport] > div {
+    display: block !important;
+  }
 }

@@ -59,13 +59,19 @@ const { data } = useQuery({
 });
 ```
 
-## Shared Types
+## Types
 
-Import DTO types from `@clawe/shared`:
+Document types come from Convex. Use `Doc<"tableName">` from the generated types:
 
 ```tsx
-import type { Agent, Task, Message } from "@clawe/shared";
+import type { Doc } from "@clawe/backend/server";
+
+type Task = Doc<"tasks">;
+type Agent = Doc<"agents">;
+type Message = Doc<"messages">;
 ```
+
+Or infer from query results (preferred when using the data directly).
 
 **Environment variables:**
 

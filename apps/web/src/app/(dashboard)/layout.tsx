@@ -14,12 +14,17 @@ type DashboardLayoutProps = {
   header: React.ReactNode;
 };
 
+// Routes that handle their own scrolling (e.g., kanban board)
+const isFullHeightRoute = (path: string) => path === "/board";
+
 const DashboardLayout = ({ children, header }: DashboardLayoutProps) => {
   const pathname = usePathname();
   const { isLoading } = useRequireOnboarding();
   const [sidebarOpen, setSidebarOpen] = useState(
     () => !isLockedSidebarRoute(pathname),
   );
+
+  const fullHeight = isFullHeightRoute(pathname);
 
   // Update sidebar state when route changes
   useEffect(() => {
@@ -47,9 +52,13 @@ const DashboardLayout = ({ children, header }: DashboardLayoutProps) => {
           <header className="flex h-12 shrink-0 items-center gap-2 border-b">
             {header}
           </header>
-          <ScrollArea className="h-full min-h-0 flex-1">
-            <main className="p-6">{children}</main>
-          </ScrollArea>
+          {fullHeight ? (
+            <main className="flex min-h-0 flex-1 flex-col p-6">{children}</main>
+          ) : (
+            <ScrollArea className="h-full min-h-0 flex-1">
+              <main className="p-6">{children}</main>
+            </ScrollArea>
+          )}
         </SidebarInset>
       </SidebarProvider>
     </SquadProvider>
