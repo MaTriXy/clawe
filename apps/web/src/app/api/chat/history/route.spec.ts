@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
+import { mockTenantAuth } from "@/test/mock-tenant-auth";
 import { GET } from "./route";
+
+vi.mock("@/lib/api/tenant-auth", () => mockTenantAuth);
 
 // Mock the shared client
 const mockRequest = vi.fn();

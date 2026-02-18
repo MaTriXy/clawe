@@ -6,6 +6,7 @@ import type {
   SessionsListResult,
   GatewayHealthResult,
   TelegramProbeResult,
+  PairingRequest,
 } from "./types";
 
 export type SquadhubConnection = {
@@ -54,6 +55,23 @@ async function invokeTool<T>(
         message: "Network error",
       },
     };
+  }
+}
+
+/**
+ * Parse the text payload from a tool invoke result.
+ * Tool results wrap their data as JSON inside `content[0].text`.
+ */
+export function parseToolText<T = Record<string, unknown>>(
+  result: ToolResult<unknown>,
+): T | null {
+  if (!result.ok) return null;
+  const text = result.result.content[0]?.text;
+  if (!text) return null;
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    return null;
   }
 }
 
@@ -196,6 +214,31 @@ export async function sessionsSend(
     sessionKey,
     message,
     timeoutSeconds: timeoutSeconds ?? 10,
+  });
+}
+
+// Pairing (via clawe_pairing plugin tool)
+export async function listPairingRequests(
+  connection: SquadhubConnection,
+  channel: string,
+): Promise<ToolResult<{ ok: boolean; requests: PairingRequest[] }>> {
+  return invokeTool(connection, "clawe_pairing", undefined, {
+    action: "list",
+    channel,
+  });
+}
+
+export async function approvePairingCode(
+  connection: SquadhubConnection,
+  channel: string,
+  code: string,
+): Promise<
+  ToolResult<{ ok: boolean; id?: string; approved?: boolean; error?: string }>
+> {
+  return invokeTool(connection, "clawe_pairing", undefined, {
+    action: "approve",
+    channel,
+    code,
   });
 }
 

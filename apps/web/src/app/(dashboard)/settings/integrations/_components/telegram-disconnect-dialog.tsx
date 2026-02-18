@@ -6,6 +6,7 @@ import { toast } from "@clawe/ui/components/sonner";
 import { api } from "@clawe/backend";
 import { Button } from "@clawe/ui/components/button";
 import { Spinner } from "@clawe/ui/components/spinner";
+import { removeTelegramBot } from "@/lib/squadhub/actions";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -32,6 +33,10 @@ export const TelegramDisconnectDialog = ({
   const handleDisconnect = async () => {
     setIsDisconnecting(true);
     try {
+      // Remove token from squadhub config
+      await removeTelegramBot();
+
+      // Update Convex status
       await disconnectChannel({ type: "telegram" });
       toast.success("Telegram disconnected");
       onOpenChange(false);
@@ -50,8 +55,8 @@ export const TelegramDisconnectDialog = ({
           <AlertDialogDescription>
             Your bot{" "}
             {botUsername && <span className="font-medium">@{botUsername}</span>}{" "}
-            will stop receiving messages. The bot token will remain saved and
-            you can reconnect anytime.
+            will stop receiving messages. You can reconnect anytime by adding a
+            new bot token.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

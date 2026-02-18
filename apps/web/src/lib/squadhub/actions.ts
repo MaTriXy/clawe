@@ -6,7 +6,8 @@ import {
   saveTelegramBotToken as saveTelegramBotTokenClient,
   removeTelegramBotToken as removeTelegramBotTokenClient,
   probeTelegramToken,
-  approveChannelPairingCode,
+  approvePairingCode as approvePairingCodeClient,
+  parseToolText,
 } from "@clawe/shared/squadhub";
 import { getConnection } from "./connection";
 
@@ -40,7 +41,36 @@ export async function approvePairingCode(
   code: string,
   channel: string = "telegram",
 ) {
-  return approveChannelPairingCode(getConnection(), channel, code);
+  const result = await approvePairingCodeClient(getConnection(), channel, code);
+
+  if (!result.ok) {
+    return {
+      ok: false as const,
+      error: { type: "tool_error", message: result.error.message },
+    };
+  }
+
+  const data = parseToolText<{
+    ok: boolean;
+    id?: string;
+    approved?: boolean;
+    error?: string;
+  }>(result);
+
+  if (!data?.ok) {
+    return {
+      ok: false as const,
+      error: {
+        type: "not_found",
+        message: data?.error || "Invalid or expired pairing code",
+      },
+    };
+  }
+
+  return {
+    ok: true as const,
+    result: { id: data.id, approved: data.approved },
+  };
 }
 
 export async function removeTelegramBot() {
